@@ -1,17 +1,17 @@
-import "react-native-gesture-handler";
 import "./global.css";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import Login from "./screens/Login";
 
-const Stack = createStackNavigator();
+import { SafeAreaView, StatusBar } from "react-native";
+import Navigator from "./navigator";
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="login" component={Login} options={{ title: "" }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView
+      className="flex-1"
+      style={{
+        paddingTop: StatusBar.currentHeight,
+      }}
+    >
+      <Navigator />
+    </SafeAreaView>
   );
 }

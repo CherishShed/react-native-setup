@@ -11,8 +11,8 @@ const CustomKeyBoardAvoider: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <KeyboardAvoidingView
       behavior="padding"
-      className="flex-1 justify-center"
-      keyboardVerticalOffset={Platform.OS == "ios" ? 100 : 0}
+      className="flex-1 px-[20px] justify-center"
+      keyboardVerticalOffset={Platform.OS == "ios" ? 200 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         {children}
