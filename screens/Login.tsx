@@ -1,10 +1,9 @@
-import { View, Text, Image, TextInput, Pressable } from "react-native";
+import { View, Text, Image, TextInput, Pressable, Alert } from "react-native";
 import React, { useState } from "react";
-import { Link, NavigationProp, useNavigation } from "@react-navigation/native";
-import CustomKeyBoardAvoider from "../components/CustomKeyBoardAvoider";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../navigator/Navigator";
-import axios from "axios";
-import { apiCaller } from "../lib/axios";
+import { LOGIN } from "../api/auth/authentication";
+import CustomKeyBoardAvoider from "../components/CustomKeyBoardAvoider";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,16 +13,17 @@ const Login = () => {
 
   const signin = async () => {
     console.log("subinggg");
-    try {
-      const response = await apiCaller.post("auth/signin", {
-        username,
-        password,
-      });
-      if (response) {
+
+    const { data, error } = await LOGIN(username, password);
+    if (data) {
+      if (!data.user.first_name) {
+        navigate("updateDetails");
+      } else {
         navigate("products");
       }
-    } catch (error) {
+    } else {
       console.log(error);
+      if (error) Alert.alert(error.message);
     }
   };
   return (

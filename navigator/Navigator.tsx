@@ -4,11 +4,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Login from "../screens/Login";
 import Signup from "../screens/Signup";
 import Products from "../screens/Products";
+import UpdateDetails from "../screens/UpdateDetails";
+import Otpscreen from "../screens/Otpscreen";
 
 export type AuthStackParamList = {
   login: undefined;
   signup: undefined;
   products: undefined;
+  updateDetails: undefined;
+  otpScreen: undefined;
 };
 const Stack = createStackNavigator<AuthStackParamList>();
 
@@ -23,6 +27,16 @@ const AuthNavigator = () => {
       <Stack.Screen
         name="products"
         component={Products}
+        options={{ title: "" }}
+      />
+      <Stack.Screen
+        name="updateDetails"
+        component={UpdateDetails}
+        options={{ title: "" }}
+      />
+      <Stack.Screen
+        name="otpScreen"
+        component={Otpscreen}
         options={{ title: "" }}
       />
     </Stack.Navigator>

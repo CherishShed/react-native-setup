@@ -1,12 +1,29 @@
-import { View, Text, Image, TextInput, Pressable } from "react-native";
+import { View, Text, Image, TextInput, Pressable, Alert } from "react-native";
 import React, { useState } from "react";
 import { Link, NavigationProp, useNavigation } from "@react-navigation/native";
-import CustomKeyBoardAvoider from "../components/CustomKeyBoardAvoider";
 import { AuthStackParamList } from "../navigator/Navigator";
+import { SIGNUP } from "../api/auth/authentication";
+import { ActivityIndicator } from "react-native-paper";
+import CustomKeyBoardAvoider from "../components/CustomKeyBoardAvoider";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { navigate } = useNavigation<NavigationProp<AuthStackParamList>>();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const signUp = async () => {
+    setLoading(true);
+    const { data, error } = await SIGNUP(username, password);
+    if (data) {
+      navigate("otpScreen");
+    } else {
+      console.log(error);
+      if (error) Alert.alert(error.message);
+    }
+    setLoading(false);
+  };
   return (
     <CustomKeyBoardAvoider>
       <View className="py-10 w-full px-4 gap-y-5 items-center">
@@ -24,24 +41,13 @@ const Signup = () => {
           </Text>
         </View>
         <View className="min-w-full p-4 gap-y-5 mb-12">
-          <View className="flex-row min-w-full justify-between gap-x-4">
-            <TextInput
-              placeholder="First name"
-              textContentType="name"
-              keyboardType="default"
-              className="border w-1/2 max-w-[50%] [h-40px] p-4  border-gray-400 rounded-lg focus:border-black"
-            />
-            <TextInput
-              placeholder="Last name"
-              textContentType="name"
-              keyboardType="default"
-              className="border [h-40px] w-1/2 max-w-[50%] p-4  border-gray-400 rounded-lg focus:border-black"
-            />
-          </View>
           <TextInput
-            placeholder="Enter your email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
+            placeholder="Enter your username"
+            textContentType="username"
+            onChangeText={(t) => {
+              setUsername(t);
+            }}
+            keyboardType="default"
             className="border min-w-full [h-40px] p-4  border-gray-400 rounded-lg focus:border-black"
           />
 
@@ -49,10 +55,22 @@ const Signup = () => {
             placeholder="Enter your password"
             keyboardType="visible-password"
             secureTextEntry={!showPassword}
+            onChangeText={(t) => {
+              setPassword(t);
+            }}
             className="border min-w-full h-[40px] border-gray-400 p-4 rounded-lg focus:border-black"
           />
-          <Pressable className="bg-black rounded-lg min-w-full p-4 ">
-            <Text className="text-white text-center">Sign up</Text>
+          <Pressable
+            className="bg-black rounded-lg min-w-full p-4 "
+            onPress={() => {
+              signUp();
+            }}
+          >
+            {loading ? (
+              <ActivityIndicator animating={true} color={"white"} />
+            ) : (
+              <Text className="text-white text-center">Sign up</Text>
+            )}
           </Pressable>
         </View>
         <View className="flex flex-row w-full justify-between">

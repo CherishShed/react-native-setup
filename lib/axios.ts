@@ -31,6 +31,7 @@ apiCaller.interceptors.response.use(
     const originalRequest = error.config;
     if ((error as AxiosError).response?.status == 401) {
       console.log("unauthorized");
+
       //   try {
       //     const refreshToken = localStorage.getItem("refreshToken"); // Retrieve the stored refresh token.
       //     // Make a request to your auth server to refresh the token.
