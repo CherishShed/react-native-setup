@@ -1,10 +1,12 @@
 import { View, Text, Image, TextInput, Pressable, Alert } from "react-native";
 import React, { useState } from "react";
 import { Link, NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../navigator/Navigator";
+import { AuthStackParamList } from "../navigator/AuthNavigator";
 import { SIGNUP } from "../api/auth/authentication";
 import { ActivityIndicator } from "react-native-paper";
 import CustomKeyBoardAvoider from "../components/CustomKeyBoardAvoider";
+import { showMessage } from "react-native-flash-message";
+import useAuth from "../hooks/useAuth";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,15 +14,17 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { SignUp: register } = useAuth();
   const signUp = async () => {
     setLoading(true);
-    const { data, error } = await SIGNUP(username, password);
+    const { data, error } = await register(username, password);
     if (data) {
+      showMessage({ message: data.message, animated: true, type: "success" });
       navigate("otpScreen");
     } else {
       console.log(error);
-      if (error) Alert.alert(error.message);
+      if (error)
+        showMessage({ message: error.message, animated: true, type: "danger" });
     }
     setLoading(false);
   };
@@ -29,7 +33,7 @@ const Signup = () => {
       <View className="py-10 w-full px-4 gap-y-5 items-center">
         <Image
           source={require("../assets/shopLogo.jpg")}
-          className="h-[250px] w-[300px] rounded-2xl"
+          className="h-[250px] w-[300px] rounded-2xl self-center"
         />
         <View>
           <Text className="font-semibold text-2xl tracking-wider text-center">
@@ -47,7 +51,7 @@ const Signup = () => {
             onChangeText={(t) => {
               setUsername(t);
             }}
-            keyboardType="default"
+            keyboardType="name-phone-pad"
             className="border min-w-full [h-40px] p-4  border-gray-400 rounded-lg focus:border-black"
           />
 
@@ -65,6 +69,7 @@ const Signup = () => {
             onPress={() => {
               signUp();
             }}
+            disabled={loading}
           >
             {loading ? (
               <ActivityIndicator animating={true} color={"white"} />

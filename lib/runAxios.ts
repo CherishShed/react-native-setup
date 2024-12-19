@@ -1,5 +1,4 @@
 import { AxiosError, AxiosResponse } from "axios";
-
 type SuccessResponse<T> = {
   data: T;
   error: null;

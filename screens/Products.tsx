@@ -1,55 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList, Text, View } from "react-native";
-import { apiCaller } from "../lib/axios";
+import { FlatList, Text, View } from "react-native";
 import { GETALLPRODUCTS } from "../api/products/GetAllProducts";
 import { NavigationProp } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../navigator/Navigator";
-import { Snackbar } from "react-native-paper";
+import { AuthStackParamList } from "../navigator/AuthNavigator";
+import { showMessage } from "react-native-flash-message";
+import { updateAuthState } from "../store/AuthStore";
+import { useDispatch } from "react-redux";
+import useApi from "../hooks/useApi";
+import { ActivityIndicator } from "react-native-paper";
 
 const Products = () => {
   const [products, setProducts] = useState<string[]>([]);
   const { navigate } = useNavigation<NavigationProp<AuthStackParamList>>();
-  const [visible, setVisible] = useState({ show: false, message: "" });
+  const dispatch = useDispatch();
+  const { callApi } = useApi();
+  const [fetching, setFetching] = useState(true);
+  const fetchProducts = async () => {
+    setFetching(true);
+    const { data, error } = await callApi(GETALLPRODUCTS);
+    if (data) {
+      const res = data.products;
+      const names = res.map((product: any) => product.name);
+      setProducts(names);
+    } else {
+      console.log(error);
+      if (error)
+        showMessage({
+          message: error.message,
+          animated: true,
+          type: "danger",
+        });
+    }
+    setFetching(false);
+  };
   useEffect(() => {
-    const fetchProducts = async () => {
-      const { data, error } = await GETALLPRODUCTS();
-      if (data) {
-        const res = data.data.products;
-        const names = res.map((product: any) => product.name);
-        setProducts(names);
-      } else {
-        console.log(error);
-        // if (error) Alert.alert(error.message);
-        setVisible({ show: true, message: error.message });
-        if (error.status == 401) {
-          navigate("login");
-        }
-      }
-    };
     fetchProducts();
   }, []);
   return (
     <View className="flex-1">
-      <FlatList
-        data={products}
-        renderItem={({ item, index }) => <Text key={index}>{item}</Text>}
-        ListEmptyComponent={() => <Text>No Items Found</Text>}
-      />
-      <Snackbar
-        visible={visible.show}
-        onDismiss={() => setVisible({ show: false, message: "" })}
-        className="!bg-black !text-white"
-        action={{
-          label: "Close",
-          labelStyle: { color: "white" },
-          onPress: () => {
-            // Do something
-          },
-        }}
-      >
-        {visible.message}
-      </Snackbar>
+      {fetching ? (
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator animating={fetching} color={"black"} />
+        </View>
+      ) : (
+        <FlatList
+          data={products}
+          renderItem={({ item, index }) => <Text key={index}>{item}</Text>}
+          ListEmptyComponent={() => <Text>No Items Found</Text>}
+          refreshing={fetching}
+          onRefresh={fetchProducts}
+        />
+      )}
     </View>
   );
 };

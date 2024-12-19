@@ -25,3 +25,10 @@ export const SIGNUP = async (username: string, password: string) => {
   );
   return response;
 };
+
+export const SIGNOUT = async () => {
+  const response = await RunAxiosAsync<SuccessFulSignup>(
+    apiCaller.post("auth/signout")
+  );
+  return response;
+};

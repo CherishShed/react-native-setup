@@ -11,7 +11,7 @@ import {
 import React, { useState } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import CustomKeyBoardAvoider from "../components/CustomKeyBoardAvoider";
-import { AuthStackParamList } from "../navigator/Navigator";
+import { AuthStackParamList } from "../navigator/AuthNavigator";
 import { UpdateUserDetails } from "../api/user/UpdateUserDetails";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { formatReadableDate } from "../utils/dateFunctions";
@@ -112,6 +112,7 @@ const UpdateDetails = () => {
             onPress={() => {
               handleUpdate();
             }}
+            disabled={loading}
           >
             {loading ? (
               <ActivityIndicator animating={true} color={"white"} />

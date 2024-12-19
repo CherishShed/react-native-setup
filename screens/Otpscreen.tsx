@@ -1,12 +1,20 @@
-import { View, Text, Alert, Pressable, Image } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { OtpInput } from "react-native-otp-entry";
 import { ResendOtp, VerifyOtp } from "../api/verification/OtpVerification";
 import { NavigationProp } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../navigator/Navigator";
+import { AuthStackParamList } from "../navigator/AuthNavigator";
 import CustomKeyBoardAvoider from "../components/CustomKeyBoardAvoider";
 import { Snackbar } from "react-native-paper";
+import { showMessage } from "react-native-flash-message";
 
 const Otpscreen = () => {
   const [otp, setOtp] = useState("");
@@ -31,10 +39,16 @@ const Otpscreen = () => {
     setLoading(true);
     const { data, error } = await VerifyOtp(otp);
     if (data) {
+      showMessage({
+        message: data.message,
+        animated: true,
+        type: "success",
+      });
       navigate("updateDetails");
     } else {
       console.log(error);
-      if (error) Alert.alert(error.message);
+      if (error)
+        showMessage({ message: error.message, animated: true, type: "danger" });
     }
     setLoading(false);
   };
@@ -66,7 +80,11 @@ const Otpscreen = () => {
                 handleSubmit();
               }}
             >
-              <Text className="text-white text-center">Verify</Text>
+              {loading ? (
+                <ActivityIndicator animating={true} color={"white"} />
+              ) : (
+                <Text className="text-white text-center">Verify</Text>
+              )}
             </Pressable>
           </View>
           <Pressable
